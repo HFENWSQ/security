@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qianyan.dao.PerManaDao">
+    <select id="selectAllCount" resultType="_int" parameterType="java.util.Map">
+        select count(*) from user
+        <where>
+            <if test="search_info!=null">uname like concat('%',#{search_info},'%')</if>
+        </where>
+    </select>
+    <select id="selectAll" parameterType="java.util.Map" resultType="cn.qianyan.beans.User">
+        select * from user
+        <where>
+            <if test="search_info!=null">uname like concat('%',#{search_info},'%')</if>
+        </where>
+        limit #{index},#{currentCount};
+    </select>
+    <insert id="addPers" parameterType="cn.qianyan.beans.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid!=null">uid,</if>
+            <if test="uname!=null">uname,</if>
+            <if test="upassword!=null">upassword,</if>
+            <if test="utelephone!=null">utelephone,</if>
+            <if test="uright!=null">uright</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uid!=null">#{uid},</if>
+            <if test="uname!=null">#{uname},</if>
+            <if test="upassword!=null">#{upassword},</if>
+            <if test="utelephone!=null">#{utelephone},</if>
+            <if test="uright!=null">#{uright}</if>
+        </trim>
+    </insert>
+    <update id="updatePers" parameterType="cn.qianyan.beans.User">
+        update user
+        <set>
+            <if test="uname!=null">uname = #{uname},</if>
+            <if test="upassword!=null">upassword = #{upassword},</if>
+            <if test="uright!=null">uright = #{uright}</if>
+        </set>
+        where uid = #{uid}
+    </update>
+    <delete id="deletePers" parameterType="cn.qianyan.beans.User">
+        delete from user where uid = #{uid}
+    </delete>
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qianyan.dao.devManaDao">
+    <select id="selectAllCount" resultType="_int" parameterType="java.util.Map">
+        select count(*) from device INNER JOIN devtype ON device.`dtid`=devtype.`dtid`
+        <where>
+            <if test="search_info!=null">dname like concat('%',#{search_info},'%')</if>
+        </where>
+    </select>
+    <select id="selectAllDev" parameterType="java.util.Map" resultMap="devTypeAndDevice">
+        select d.did did,d.dname dname,d.dalertNum dalertNum,d.dtemperature dtemperature,
+                d.dstate dstate,d.dkeepState dkeepState,d.aid aid,d.dtid dtid,d.dbreakTime dbreakTime,
+                dt.dtid dtid1,dt.dtname dtname
+        from device d INNER JOIN devtype dt ON d.dtid = dt.dtid
+        <where>
+            <if test="search_info!=null">dname like concat('%',#{search_info},'%')</if>
+        </where>
+        limit #{index},#{currentCount};
+    </select>
+    <resultMap id="devTypeAndDevice" type="cn.qianyan.beans.Device">
+        <result property="did" column="did"/>
+        <result property="dalertNum" column="dalertNum"/>
+        <result property="dtemperature" column="dtemperature"/>
+        <result property="dstate" column="dstate"/>
+        <result property="dkeepState" column="dkeepState"/>
+        <result property="aid" column="aid"/>
+        <result property="dtid" column="dtid"/>
+        <result property="dbreakTime" column="dbreakTime"/>
+        <association property="devType" javaType="cn.qianyan.beans.DevType">
+            <result property="dtid" column="dtid1"/>
+            <result property="dtname" column="dtname"/>
+        </association>
+    </resultMap>
+
+    <insert id="addDev" parameterType="cn.qianyan.beans.Device">
+        insert into device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="did!=null">did,</if>
+            <if test="dname!=null">dname,</if>
+            <if test="dstate!=null">dstate,</if>
+            <if test="dtid!=null">dtid,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="did!=null">#{did},</if>
+            <if test="dname!=null">#{dname},</if>
+            <if test="dstate!=null">#{dstate},</if>
+            <if test="dtid!=null">#{dtid},</if>
+        </trim>
+    </insert>
+    <update id="updateDev" parameterType="cn.qianyan.beans.Device">
+        update device
+        <set>
+            <if test="dname!=null">dname = #{dname},</if>
+            <if test="dstate!=null">dstate = #{dstate},</if>
+            <if test="dtid!=null">dtid = #{dtid}</if>
+        </set>
+        where did = #{did}
+    </update>
+    <delete id="deleteDev" parameterType="cn.qianyan.beans.Device">
+        delete from user where did = #{did}
+    </delete>
+</mapper>
